@@ -1,10 +1,45 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
+from PIL import Image
 
-from .models import User
+from .models import User, Bid, Listing, Comment
+
+# Form for create listing page
+class CreateListingForm(forms.ModelForm):
+    """Creates form for Auction model."""
+    title = forms.CharField(label="Title", max_length=20, required=True, widget=forms.TextInput(attrs={
+                                                                            "autocomplete": "off",
+                                                                            "placeholder": "Title",
+                                                                            "aria-label": "title",
+                                                                            "class": "form-control"
+                                                                        }))
+    description = forms.CharField(label="Description", widget=forms.Textarea(attrs={
+                                    'placeholder': "Product Description",
+                                    'aria-label': "description",
+                                    'rows': 10,
+                                    "class": "form-control"
+                                    }))
+    photo = forms.ImageField(label="Photo", required=True, widget=forms.ClearableFileInput(attrs={
+                                        "class": "form-control-file"
+                                    }))
+
+    category = forms.ChoiceField(required=True, choices=Listing.CATEGORIES, widget=forms.Select(attrs={
+                                        "class": "form-control"
+                                    }))
+    price = forms.DecimalField(label="Price", required=True, widget=forms.NumberInput(attrs={
+                                        "class": "form-control",
+                                        "placeholder": "Starting Price"
+
+    }))
+
+    class Meta:
+        model = Listing
+        fields = ["title", "description", "category", "photo", "price"]
 
 
 def index(request):
@@ -61,3 +96,37 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+# allow users to create a new listing if logged in
+@login_required(login_url="auctions:login")
+def create_listing(request):
+    """Create Listing view: allows to add new listing through a form."""
+    if request.method == "POST":
+        form = CreateListingForm(request.POST)
+        if form.is_valid():
+            # Get all data from the form
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
+            price = form.cleaned_data["price"]
+            category = form.cleaned_data["category"]
+            photo = form.cleaned_data["photo"]
+
+            # Save a record
+            listing = Listing(
+                owner = User.objects.get(pk=request.user.id),
+                title = title,
+                description = description,
+                price = price,
+                category = category,
+                photo = photo,
+            )
+            listing.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "auctions/create.html", {
+                "form": form
+            })
+
+    return render(request, "auctions/create.html", {
+        "form": CreateListingForm(),
+    })
