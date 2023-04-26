@@ -24,10 +24,12 @@ class CreateListingForm(forms.ModelForm):
                                     'rows': 10,
                                     "class": "form-control"
                                     }))
-    photo = forms.ImageField(label="Photo", required=True, widget=forms.ClearableFileInput(attrs={
-                                        "class": "form-control-file"
+    # photo = forms.ImageField(label="Photo", required=True, widget=forms.ClearableFileInput(attrs={
+    #                                     "class": "form-control-file"
+    #                                 }))
+    photo = forms.URLField(label="Image URL", required=True, widget=forms.URLInput(attrs={
+                                        "class": "form-control"
                                     }))
-
     category = forms.ChoiceField(required=True, choices=Listing.CATEGORIES, widget=forms.Select(attrs={
                                         "class": "form-control"
                                     }))
@@ -35,8 +37,10 @@ class CreateListingForm(forms.ModelForm):
                                         "class": "form-control",
                                         "placeholder": "Starting Price"
 
-    }))
-
+                                    }))
+    # date_created = forms.DateField(label="date_created", required=True, widget=forms.HiddenInput(attrs={
+    #                                     "class": "form-control"
+    # }))
     class Meta:
         model = Listing
         fields = ["title", "description", "category", "photo", "price"]
@@ -110,18 +114,21 @@ def create_listing(request):
             price = form.cleaned_data["price"]
             category = form.cleaned_data["category"]
             photo = form.cleaned_data["photo"]
+            # date_created = form.cleaned_data["date_created"]
+            currentUser = request.user
 
             # Save a record
             listing = Listing(
-                owner = User.objects.get(pk=request.user.id),
-                title = title,
+                owner = currentUser,
+                name = title,
                 description = description,
-                price = price,
+                price = float(price),
                 category = category,
                 photo = photo,
+                # date_created = date_created
             )
             listing.save()
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('index'))
         else:
             return render(request, "auctions/create.html", {
                 "form": form
