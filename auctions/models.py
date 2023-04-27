@@ -41,6 +41,7 @@ class Listing(models.Model):
     bids = models.ManyToManyField(Bid, blank=True, related_name="bids")
     category = models.CharField(max_length=2, choices=CATEGORIES, default=CATEGORIES[5][1])
     description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.name}: is {self.price} and is being sold by {self.owner}"

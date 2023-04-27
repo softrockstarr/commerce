@@ -2,6 +2,14 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-
-    TODO
+    {% comment %} display: title, description, price, photo {% endcomment %}
+    {% for listing in listings %}
+    <div class="active-listing">
+        <img src="{{ listing.photo }}" height="200px"/>
+        <h3>{{ listing.name }}</h3>
+        <span>${{ listing.price }}</span>
+        <p>{{ listing.description }}</p>
+        <span>{{ listing.category }} </span>
+    </div>
+    {% endfor %}
 {% endblock %}

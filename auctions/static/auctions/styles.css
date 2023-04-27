@@ -1,3 +1,9 @@
 body {
     padding: 10px;
 }
+
+.active-listing{
+    border: 1px solid rgb(147, 144, 144);
+    margin: 10px;
+}
+
