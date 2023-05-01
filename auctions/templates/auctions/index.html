@@ -1,15 +1,19 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-    {% comment %} display: title, description, price, photo {% endcomment %}
-    {% for listing in listings %}
-    <div class="active-listing">
-        <img src="{{ listing.photo }}" height="200px"/>
-        <h3>{{ listing.name }}</h3>
-        <span>${{ listing.price }}</span>
-        <p>{{ listing.description }}</p>
-        <span>{{ listing.category }} </span>
+    <h2>Active Listings</h2>      
+    <div class="row mx-4">
+        {% for listing in listings %}
+            <div class="card mx-3" style="width: 18rem;">
+                <img class="card-img-top img-responsive" src="{{ listing.photo }}" alt="{{ listing.name }}"/>
+                <div class="card-body">
+                    <h3 class="card-title">{{ listing.name }}</h3>
+                    <span class="card-text">${{ listing.price }}</span>
+                    <p>{{ listing.description }}</p>
+                    <p> {{ listing.category }}</p>
+                    <a href="" class="btn btn-primary">View Listing</a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 {% endblock %}
