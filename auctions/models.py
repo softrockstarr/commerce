@@ -1,8 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# class Photo(models.Model):
-#     photo = models.ImageField(upload_to='images/')
 
 class User(AbstractUser):
     pass
@@ -31,14 +29,12 @@ class Listing(models.Model):
     ('OT', 'Other')
     )
 
-    # photo = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
     photo = models.URLField(blank=True)
     price = models.DecimalField(decimal_places=2, max_digits=7)
     name = models.CharField(max_length=200)
-    # date_created = models.DateField(auto_now_add=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
     bids = models.ManyToManyField(Bid, blank=True, related_name="bids")
-    category = models.CharField(max_length=2, choices=CATEGORIES, default=CATEGORIES[5][1])
+    category = models.CharField(max_length=2, choices=CATEGORIES, default=CATEGORIES[5][0])
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
 

@@ -7,48 +7,16 @@ from django.urls import reverse
 from django import forms
 
 from .models import User, Bid, Listing, Comment
-
-# Form for create listing page
-class CreateListingForm(forms.ModelForm):
-    """Creates form for Auction model."""
-    title = forms.CharField(label="Title", max_length=20, required=True, widget=forms.TextInput(attrs={
-                                                                            "autocomplete": "off",
-                                                                            "placeholder": "Title",
-                                                                            "aria-label": "title",
-                                                                            "class": "form-control"
-                                                                        }))
-    description = forms.CharField(label="Description", widget=forms.Textarea(attrs={
-                                    'placeholder': "Product Description",
-                                    'aria-label': "description",
-                                    'rows': 10,
-                                    "class": "form-control"
-                                    }))
-    # photo = forms.ImageField(label="Photo", required=True, widget=forms.ClearableFileInput(attrs={
-    #                                     "class": "form-control-file"
-    #                                 }))
-    photo = forms.URLField(label="Image URL", required=True, widget=forms.URLInput(attrs={
-                                        "class": "form-control"
-                                    }))
-    category = forms.ChoiceField(required=True, choices=Listing.CATEGORIES, widget=forms.Select(attrs={
-                                        "class": "form-control"
-                                    }))
-    price = forms.DecimalField(label="Price", required=True, widget=forms.NumberInput(attrs={
-                                        "class": "form-control",
-                                        "placeholder": "Starting Price"
-
-                                    }))
-    # date_created = forms.DateField(label="date_created", required=True, widget=forms.HiddenInput(attrs={
-    #                                     "class": "form-control"
-    # }))
-    class Meta:
-        model = Listing
-        fields = ["title", "description", "category", "photo", "price"]
+from .forms import *
 
 
 def index(request):
+    # set all active listings to listings variable and render them on index page
+    form = CreateListingForm(request.POST)
     listings = Listing.objects.filter(is_active=True)
     return render(request, "auctions/index.html", {
-        "listings": listings
+        "listings": listings,
+        "form": form
     })
 
 
@@ -116,7 +84,6 @@ def create_listing(request):
             price = form.cleaned_data["price"]
             category = form.cleaned_data["category"]
             photo = form.cleaned_data["photo"]
-            # date_created = form.cleaned_data["date_created"]
             currentUser = request.user
 
             # Save a record
@@ -127,7 +94,6 @@ def create_listing(request):
                 price = float(price),
                 category = category,
                 photo = photo,
-                # date_created = date_created
             )
             listing.save()
             return HttpResponseRedirect(reverse('index'))
@@ -139,3 +105,25 @@ def create_listing(request):
     return render(request, "auctions/create.html", {
         "form": CreateListingForm(),
     })
+
+# display all active listings for selected category
+def show_category(request):
+    if request.method == "POST":
+        form = FilterCategoryForm(request.POST)
+        if form.is_valid():
+            selected_category = form.cleaned_data["category"]
+            listings = Listing.objects.filter(is_active=True, category=selected_category)
+            return render(request, "auctions/category.html", {
+                "listings": listings,
+                "category": selected_category,
+            })
+    else:
+        # if the request method is GET, just render the category.html template
+        form = FilterCategoryForm()
+        
+    return render(request, "auctions/category.html", {
+        "form": form,
+    })
+
+def show_listing(request, id):
+    return render(request, "auctions/listing.html")
