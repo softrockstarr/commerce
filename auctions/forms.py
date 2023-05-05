@@ -41,3 +41,18 @@ class FilterCategoryForm(forms.ModelForm):
             'category': forms.Select(choices=Listing.CATEGORIES)
         }
 
+class BidForm(forms.ModelForm):
+    class Meta:
+        model = Bid
+        fields = ["price"]
+        labels = {
+            "price": ("")
+        }
+        widgets = {
+            "price": forms.NumberInput(attrs={
+                "placeholder": "Bid",
+                "min": 0.01,
+                "max": 100000000000,
+                "class": "form-control"
+            })
+        }

@@ -19,7 +19,7 @@
     <h2>Listing: {{ listing.name }} </h2>
     <span>Sold By: {{ listing.owner }} </span>
     <img class="listing-img" src="{{ listing.photo }}" alt="{{ listing.name }}" height="400px"/>
-    <span>${{ listing.price}} </span>
+    <span>Current Price: ${{ listing.price}} </span>
     <p>{{ listing.description }}</p>
     <span>Category: {{ listing.get_category_display }}</span>
     <span> {{ listing.bids }} bid(s) so far. </span>
@@ -40,7 +40,7 @@
             </div>
         </form>
     {% endif %}
-        <ul class="list-grouo">
+        <ul class="list-group">
     {% for comment in comments %}
             <li class="list-group-item">{{ comment.user }}: {{ comment.comment }}</li>
     {% endfor %}   

@@ -166,4 +166,6 @@ def add_comment(request, id):
         )
     new_comment.save()
     return HttpResponseRedirect(reverse('listing', args=[str(id)]))
+
+
     
