@@ -37,6 +37,7 @@ class Listing(models.Model):
     category = models.CharField(max_length=2, choices=CATEGORIES, default=CATEGORIES[5][0])
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
+    watchlist = models.ManyToManyField(User, blank=True, null=True, related_name="user")
 
     def __str__(self):
         return f"{self.name}: is {self.price} and is being sold by {self.owner}"

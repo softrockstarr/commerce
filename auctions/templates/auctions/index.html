@@ -21,7 +21,7 @@
                     <span class="card-text">${{ listing.price }}</span>
                     <p>{{ listing.description }}</p>
                     <p> {{ listing.get_category_display }}</p>
-                    <a href="{% url 'show_listing' id=listing.id %}" class="btn btn-primary">Details</a>
+                    <a href="{% url 'listing' id=listing.id %}" class="btn btn-primary">Details</a>
                 </div>
             </div>
         {% endfor %}

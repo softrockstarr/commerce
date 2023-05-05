@@ -32,6 +32,7 @@ class CreateListingForm(forms.ModelForm):
         model = Listing
         fields = ["title", "description", "category", "photo", "price"]
 
+# Drop-down to filter by category 
 class FilterCategoryForm(forms.ModelForm):
     class Meta:
         model = Listing
@@ -39,3 +40,4 @@ class FilterCategoryForm(forms.ModelForm):
         widgets = {
             'category': forms.Select(choices=Listing.CATEGORIES)
         }
+

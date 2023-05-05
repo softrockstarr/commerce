@@ -7,3 +7,9 @@ body {
     margin-left: 1.5rem;
     margin-bottom: 1.5rem;
 }
+
+.listing-details{
+    display: block;
+    width: 90vw;
+    border: 1px dashed red;
+}

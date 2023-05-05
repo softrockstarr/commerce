@@ -125,5 +125,23 @@ def show_category(request):
         "form": form,
     })
 
+# displays listing details for selected listing
 def show_listing(request, id):
-    return render(request, "auctions/listing.html")
+    listing = Listing.objects.get(pk=id)
+    listing_in_watchlist = False
+    return render(request, "auctions/listing.html", {
+        "listing": listing,
+        "listing_in_watchlist": listing_in_watchlist
+    })
+
+def remove_watchlist(request, id):
+    listing = Listing.objects.get(pk=id)
+    user = request.user
+    listing.watchlist.remove(user)
+    return HttpResponseRedirect(reverse('listing', args=[str(id)]))
+
+def add_watchlist(request, id):
+    listing = Listing.objects.get(pk=id)
+    user = request.user
+    listing.watchlist.add(user)
+    return HttpResponseRedirect(reverse('listing', args=(id,)))
