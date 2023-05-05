@@ -128,8 +128,10 @@ def show_category(request):
 # displays listing details for selected listing
 def show_listing(request, id):
     listing = Listing.objects.get(pk=id)
+    comments = Comment.objects.filter(listing=listing)
     return render(request, "auctions/listing.html", {
         "listing": listing,
+        "comments": comments
     })
 
 def remove_watchlist(request, id):
@@ -151,3 +153,17 @@ def show_watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "listings": listings
     })
+
+# allows users to add comments to listings
+def add_comment(request, id):
+    user = request.user
+    listing = Listing.objects.get(pk=id)
+    comment = request.POST['comment']
+    new_comment = Comment(
+        user = user,
+        listing = listing,
+        comment = comment,
+        )
+    new_comment.save()
+    return HttpResponseRedirect(reverse('listing', args=[str(id)]))
+    
