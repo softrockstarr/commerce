@@ -4,7 +4,7 @@ from .models import *
 # Form for create listing page
 class CreateListingForm(forms.Form):
     """Creates form for Auction model."""
-    title = forms.CharField(label="Title", max_length=20, required=True, widget=forms.TextInput(attrs={
+    title = forms.CharField(label="Title", max_length=400, required=True, widget=forms.TextInput(attrs={
                                                                             "autocomplete": "off",
                                                                             "placeholder": "Title",
                                                                             "aria-label": "title",
@@ -27,12 +27,6 @@ class CreateListingForm(forms.Form):
                                         "placeholder": "Starting Price"
 
                                     }))
-    
-    # class Meta:
-    #     model = Listing
-    #     fields = ["title", "description", "category", "photo", "price"]
-
-
 
 # Drop-down to filter by category 
 class FilterCategoryForm(forms.ModelForm):
@@ -43,18 +37,3 @@ class FilterCategoryForm(forms.ModelForm):
             'category': forms.Select(choices=Listing.CATEGORIES)
         }
 
-# class BidForm(forms.ModelForm):
-#     class Meta:
-#         model = Bid
-#         fields = ["price"]
-#         labels = {
-#             "price": ("")
-#         }
-#         widgets = {
-#             "price": forms.NumberInput(attrs={
-#                 "placeholder": "Bid",
-#                 "min": 0.01,
-#                 "max": 100000000000,
-#                 "class": "form-control"
-#             })
-#         }
