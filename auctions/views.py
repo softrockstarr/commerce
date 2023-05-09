@@ -135,9 +135,11 @@ def show_category(request):
 def show_listing(request, id):
     listing = Listing.objects.get(pk=id)
     comments = Comment.objects.filter(listing=listing)
+    listing_owner = request.user.username == listing.owner.username
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "comments": comments
+        "comments": comments,
+        "owner": listing_owner
     })
 
 def remove_watchlist(request, id):
@@ -173,20 +175,10 @@ def add_comment(request, id):
     new_comment.save()
     return HttpResponseRedirect(reverse('listing', args=[str(id)]))
 
-# def place_bid(request, id):
-#     listing = Listing.objects.get(pk=id)
-#     bid_price = request.POST['bid']
-#     user = request.user
-#     new_bid = Bid(
-#         bid = bid_price,
-#         user = user
-#         )
-#     new_bid.save()
-#     return HttpResponseRedirect(reverse('listing', args=(id,)))
-
 def place_bid(request, id):
     bid_price = request.POST['bid']
     listing_info = Listing.objects.get(pk=id)
+    listing_owner = request.user.username == listing_info.owner.username
     if float(bid_price) > listing_info.price.bid:
         new_bid = Bid(
             user=request.user, 
@@ -198,14 +190,29 @@ def place_bid(request, id):
         return render(request, "auctions/listing.html", {
             "listing": listing_info,
             "message": "Your bid has been placed successfully!",
-            "update": True
+            "update": True,
+            "owner": listing_owner,
         })
     else:
         return render(request, "auctions/listing.html", {
             "listing": listing_info,
             "message": "Bid must be higher than current bid.",
-            "update": False
+            "update": False,
+            "owner": listing_owner,
         })
+    
+def close_auction(request, id):
+    listing_info = Listing.objects.get(pk=id)
+    listing_info.is_active = False
+    listing_info.save()
+    listing_owner = request.user.username == listing_info.owner.username
+    return render(request, "auctions/listing.html", {
+        "listing": listing_info,
+        "owner": listing_owner,
+        "update": True,
+        "close_message": "Auction closed"
+    })
+    
         
         
 

@@ -12,7 +12,6 @@ class Bid(models.Model):
     def __str__(self):
         return str(self.bid)
 
-
 # model for auction listings
 class Listing(models.Model):
     CATEGORIES = (

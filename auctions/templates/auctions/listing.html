@@ -1,17 +1,30 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    {% if close_message %}
+            <div class="alert alert-success" role="alert">
+                {{ close_message }}
+            </div>
+    {% endif %}
 <div class="row">
-    {% if request.user in listing.watchlist.all %}
-    <form action="{% url 'remove_watchlist' id=listing.id %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-warning">Remove from Watchlist</button>
-    </form>
-    {% else %}
-    <form action="{% url 'add_watchlist' id=listing.id %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Add to Watchlist</button>
-    </form>
+    {% if user.is_authenticated and listing.is_active %}
+        {% if owner %}
+        <form action="{% url 'close_auction' id=listing.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Close Auction</button>
+        </form>
+        {% endif %}
+        {% if request.user in listing.watchlist.all %}
+        <form action="{% url 'remove_watchlist' id=listing.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Remove from Watchlist</button>
+        </form>
+        {% else %}
+        <form action="{% url 'add_watchlist' id=listing.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+        </form>
+        {% endif %}
     {% endif %}
 </div>
 
@@ -22,7 +35,6 @@
     <span>Current Price: ${{ listing.price}} </span>
     <p>{{ listing.description }}</p>
     <span>Category: {{ listing.get_category_display }}</span>
-    <span> {{ listing.bids }} bid(s) so far. </span>
     <div class="container">
     {% if user.is_authenticated %}
         <form action="{% url 'place_bid' id=listing.id %}" method="POST">
@@ -34,7 +46,7 @@
         </form>
     {% endif %}
         {% if message %}
-            {% if updated %}
+            {% if update %}
             <div class="alert alert-success" role="alert">
                 {{ message }}
             </div>
@@ -44,6 +56,12 @@
             </div>
             {% endif %}
         {% endif %}
+        {% if not listing.is_active and user == listing.price.user %}
+            <div class="alert alert-success" role="alert">
+                <span>Congratulations! You have one this auction!</span>
+            </div>
+        {% endif %}
+        
     </div>
 </div>    
 
