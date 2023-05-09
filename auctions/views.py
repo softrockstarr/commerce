@@ -85,13 +85,18 @@ def create_listing(request):
             category = form.cleaned_data["category"]
             photo = form.cleaned_data["photo"]
             currentUser = request.user
-
-            # Save a record
+            # Save a bid
+            current_bid = Bid(
+                bid = int(price),
+                user = currentUser,
+            )
+            current_bid.save()
+            # Save a listing
             listing = Listing(
                 owner = currentUser,
                 name = title,
                 description = description,
-                price = float(price),
+                price = current_bid,
                 category = category,
                 photo = photo,
             )
@@ -105,6 +110,7 @@ def create_listing(request):
     return render(request, "auctions/create.html", {
         "form": CreateListingForm(),
     })
+
 
 # display all active listings for selected category
 def show_category(request):
@@ -129,9 +135,11 @@ def show_category(request):
 def show_listing(request, id):
     listing = Listing.objects.get(pk=id)
     comments = Comment.objects.filter(listing=listing)
+    listing_owner = request.user.username == listing.owner.username
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "comments": comments
+        "comments": comments,
+        "owner": listing_owner
     })
 
 def remove_watchlist(request, id):
@@ -166,6 +174,50 @@ def add_comment(request, id):
         )
     new_comment.save()
     return HttpResponseRedirect(reverse('listing', args=[str(id)]))
+
+def place_bid(request, id):
+    bid_price = request.POST['bid']
+    listing_info = Listing.objects.get(pk=id)
+    listing_owner = request.user.username == listing_info.owner.username
+    if float(bid_price) > listing_info.price.bid:
+        new_bid = Bid(
+            user=request.user, 
+            bid=float(bid_price)
+            )
+        new_bid.save()
+        listing_info.price = new_bid
+        listing_info.save()
+        return render(request, "auctions/listing.html", {
+            "listing": listing_info,
+            "message": "Your bid has been placed successfully!",
+            "update": True,
+            "owner": listing_owner,
+        })
+    else:
+        return render(request, "auctions/listing.html", {
+            "listing": listing_info,
+            "message": "Bid must be higher than current bid.",
+            "update": False,
+            "owner": listing_owner,
+        })
+    
+def close_auction(request, id):
+    listing_info = Listing.objects.get(pk=id)
+    listing_info.is_active = False
+    listing_info.save()
+    listing_owner = request.user.username == listing_info.owner.username
+    return render(request, "auctions/listing.html", {
+        "listing": listing_info,
+        "owner": listing_owner,
+        "update": True,
+        "close_message": "Auction closed"
+    })
+    
+        
+        
+
+
+
 
 
     
