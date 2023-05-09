@@ -23,10 +23,15 @@
     <p>{{ listing.description }}</p>
     <span>Category: {{ listing.get_category_display }}</span>
     <span> {{ listing.bids }} bid(s) so far. </span>
-    <div class="form-group">
-    <input type="text">
-    <a href="" class="btn btn-primary">Place Bid</a>
-    </div>
+    {% if user.is_authenticated %}
+        <form action="{% url 'place_bid' id=listing.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="bid" placeholder="Bid"/>           
+                <button type="submit" class="btn btn-primary">Place Bid</button>
+            </div>
+        </form>
+    {% endif %}
 </div>    
 
 <div>

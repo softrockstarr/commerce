@@ -85,13 +85,18 @@ def create_listing(request):
             category = form.cleaned_data["category"]
             photo = form.cleaned_data["photo"]
             currentUser = request.user
-
-            # Save a record
+            # Save a bid
+            current_bid = Bid(
+                bid = int(price),
+                user = currentUser,
+            )
+            current_bid.save()
+            # Save a listing
             listing = Listing(
                 owner = currentUser,
                 name = title,
                 description = description,
-                price = float(price),
+                price = current_bid,
                 category = category,
                 photo = photo,
             )
@@ -105,6 +110,7 @@ def create_listing(request):
     return render(request, "auctions/create.html", {
         "form": CreateListingForm(),
     })
+
 
 # display all active listings for selected category
 def show_category(request):
@@ -166,6 +172,19 @@ def add_comment(request, id):
         )
     new_comment.save()
     return HttpResponseRedirect(reverse('listing', args=[str(id)]))
+
+def place_bid(request, id):
+    listing = Listing.objects.get(pk=id)
+    bid_price = request.POST['bid']
+    user = request.user
+    new_bid = Bid(
+        listing = listing,
+        price = bid_price,
+        user = user
+        )
+    new_bid.save()
+    return HttpResponseRedirect(reverse('listing', args=(id,)))
+
 
 
     
