@@ -23,15 +23,28 @@
     <p>{{ listing.description }}</p>
     <span>Category: {{ listing.get_category_display }}</span>
     <span> {{ listing.bids }} bid(s) so far. </span>
+    <div class="container">
     {% if user.is_authenticated %}
         <form action="{% url 'place_bid' id=listing.id %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <input type="text" name="bid" placeholder="Bid"/>           
+                <input type="text" name="bid" min="0" placeholder="Bid"/>           
                 <button type="submit" class="btn btn-primary">Place Bid</button>
             </div>
         </form>
     {% endif %}
+        {% if message %}
+            {% if updated %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+            {% else %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
 </div>    
 
 <div>

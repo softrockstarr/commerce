@@ -173,17 +173,43 @@ def add_comment(request, id):
     new_comment.save()
     return HttpResponseRedirect(reverse('listing', args=[str(id)]))
 
+# def place_bid(request, id):
+#     listing = Listing.objects.get(pk=id)
+#     bid_price = request.POST['bid']
+#     user = request.user
+#     new_bid = Bid(
+#         bid = bid_price,
+#         user = user
+#         )
+#     new_bid.save()
+#     return HttpResponseRedirect(reverse('listing', args=(id,)))
+
 def place_bid(request, id):
-    listing = Listing.objects.get(pk=id)
     bid_price = request.POST['bid']
-    user = request.user
-    new_bid = Bid(
-        listing = listing,
-        price = bid_price,
-        user = user
-        )
-    new_bid.save()
-    return HttpResponseRedirect(reverse('listing', args=(id,)))
+    listing_info = Listing.objects.get(pk=id)
+    if float(bid_price) > listing_info.price.bid:
+        new_bid = Bid(
+            user=request.user, 
+            bid=float(bid_price)
+            )
+        new_bid.save()
+        listing_info.price = new_bid
+        listing_info.save()
+        return render(request, "auctions/listing.html", {
+            "listing": listing_info,
+            "message": "Your bid has been placed successfully!",
+            "update": True
+        })
+    else:
+        return render(request, "auctions/listing.html", {
+            "listing": listing_info,
+            "message": "Bid must be higher than current bid.",
+            "update": False
+        })
+        
+        
+
+
 
 
 
