@@ -29,7 +29,7 @@ class Listing(models.Model):
 
     photo = models.URLField(blank=True)
     price = models.ForeignKey(Bid, on_delete=models.CASCADE, blank=True, null=True, related_name="bid_price")
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=400)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
     category = models.CharField(max_length=2, choices=CATEGORIES, default=CATEGORIES[5][0])
     description = models.TextField(blank=True)
@@ -39,18 +39,6 @@ class Listing(models.Model):
     def __str__(self):
         return f"{self.name}: is {self.price} and is being sold by {self.owner}"
     
-# model for bids
-# class Bid(models.Model):
-#     time = models.DateTimeField(auto_now_add=True, blank=True)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_bid")
-#     price = models.DecimalField(max_digits=7, decimal_places=2)
-#     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, null=True)
-
-    # def __str__(self):
-    #     return f"{self.user} just placed a bid for {self.price}"
-
-
-
 # model for comments
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comment")
